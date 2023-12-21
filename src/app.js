@@ -2,46 +2,44 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 
 // modules
 import jokesFile from "./Data/jokes.js";
 
 const app = express();
 
-// ------------------------------ CORS ------------------------------
-app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-    optionsSuccessStatus: 200 
-}));
+// CORS
+app.use(
+    cors({
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
+        optionsSuccessStatus: 200,
+    })
+);
 
+// MIDDLEWARES
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
-// ------------------------------ MIDDLEWARES -----------------------------
+app.use(express.static("public")); // to store assets locally in server: img, vdo, pdf, doc, ..etc
+app.use(cookieParser()); // cookie-parser
 
-app.use(express.json({limit:'16kb'}));  // accept json format 
+// Routers imports
+import userRouter from "./Routes/user.route.js";
 
-app.use(express.urlencoded({extended: true, limit:'16kb'})); // accept from other url
+//  Route declaration
+app.use("/user", userRouter);
 
-app.use(express.static("public")) // to store assets locally in server: img, vdo, pdf, doc, ..etc
-
-app.use(cookieParser()); //cookie-parser
-
-
-
-
-// ------------------------------ API testing ------------------------------
+// API testing
 app.get("/", function (req, res, next) {
-    res.json({ msg: `Enabling the CORS for only ${corsOptions.origin}` });
+    res.json({
+        msg: `The server is working on: http://localhost:${process.env.PORT}`,
+    });
 });
 
 app.get("/jokes", (req, res) => {
     res.send(jokesFile);
 });
-
-
-
-
-
-
 
 export default app;

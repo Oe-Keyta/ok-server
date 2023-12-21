@@ -1,5 +1,7 @@
 import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
+import path from "path";
+import ThrowError from "./throwError.util.js";
 
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -7,27 +9,32 @@ cloudinary.config({
     api_secret: process.env.CLOUD_API_SECRET,
 });
 
-// uploading to cloudinary
 const uploadToCloudinary = async (localFilePath) => {
     try {
 
         if (!localFilePath) return null;
 
-        // uploading
+        // upstreaming
         const responseFileUpload = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto" // to detect itself the type of file.
+            resource_type:"image", // to detect itself : use auto
+            public_id:`${path.basename(localFilePath)}`,
+
         });
 
-        // if successfully upload message
         if(responseFileUpload){
         console.log("-->R: File is uploaded successfully at:  ", responseFileUpload.url);
-        // remove from local storage
         fs.unlinkSync(localFilePath);
+        }else{
+            throw new ThrowError("cloudinary uploader", "upload() failure !!", "cloudinary.util");
+            fs.unlinkSync(localFilePath);
         }
+
+        return responseFileUpload;
+
     } catch (error) {
-        // if fails to upload then unlink/remove the lcoal cache file from server
+
         fs.unlinkSync(localFilePath);
-        console.log("\n-->E: Error in uploading file !!");
+        console.log("\n-->util.E: ", error);
         return null;
     }
 };

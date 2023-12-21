@@ -4,49 +4,73 @@ const productSchema = new mongoose.Schema(
     {
         Name: {
             type: String,
-            required: true,
+            required: [true, "Please Enter product Name"],
         },
         Desc: {
             type: String,
-            required: true,
+            required: [true, "Please Enter product Description"],
         },
-        productImages: [
+        ProductImages: [
             {
-                type: String, // cloudinary link
+                public_id: {
+                    type: String, // cloudinary link
+                    required: true,
+                },
+                url: {
+                    type: String,
+                    required: true,
+                },
             },
         ],
-        price: {
+        Price: {
             type: Number,
-            required: true,
-            default: 0,
+            required: [true, "Please Enter product Price"],
+            maxLength: [8, "Price cannot exceeds 8 figures"],
         },
-        stockNumber: {
+        Stock: {
             type: Number,
-            required: true,
+            required: [true, "Required Stock Number"],
+            maxLength: [3, "Cannot Exceds more than 1000 stock"],
             default: 1,
         },
 
         // other connection of db
-        category: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Category",
-            required: true
+        Category: {
+            type: String,
+            required: [true, "Enter Product Category"],
         },
         Owner: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            required: true,
         },
+
+        
         Reviews: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Review",
-                default: null
+                reviewer: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
+                },
+                name: {
+                    type: String,
+                    required: true,
+                },
+                rate:{
+                    type: Number,
+                    required: true
+                },
+                comment:{
+                    type: String,
+                    required: true,
+                    default: ""
+                }
             },
         ],
-        Rate: {
+        Rating: {
             type: Number,
-            default: null
+            default: 0,
         },
     },
     {

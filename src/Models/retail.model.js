@@ -35,7 +35,13 @@ const retailSchema = new mongoose.Schema(
         Password:{
             type: String,
             required: true
-        }
+        },
+        
+        // His products/brands
+        productCollection:[
+
+        ],
+        
     },
     { timestamps: true }
 );
