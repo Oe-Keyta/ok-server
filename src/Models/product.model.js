@@ -43,9 +43,8 @@ const productSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+            unique: true,
         },
-
-        
         Reviews: [
             {
                 reviewer: {
@@ -57,15 +56,15 @@ const productSchema = new mongoose.Schema(
                     type: String,
                     required: true,
                 },
-                rate:{
+                rate: {
                     type: Number,
-                    required: true
+                    required: true,
                 },
-                comment:{
+                comment: {
                     type: String,
                     required: true,
-                    default: ""
-                }
+                    default: "",
+                },
             },
         ],
         Rating: {

@@ -18,7 +18,7 @@ const registerUser = asyncHandler(async (req, res) => {
         const validateData = [Name, Email, Password, Address, PhoneNumber].some(
             (field) => field === ""
         );
-        if (validateData) throw new ApiError(400, "Required All field !! ");
+        if (validateData) throw new ApiError(400, "Required All field !!");
 
         const exitedUser = await User.findOne({
             $or: [{ Email }, { PhoneNumber }],
@@ -31,14 +31,14 @@ const registerUser = asyncHandler(async (req, res) => {
             );
         }
 
-        let avatarLocalPath = req.file.path;
-        console.log("\n-->R: local avatar path: ", avatarLocalPath);
-        if (!avatarLocalPath) {
+        let avatar = req.file;
+        console.log("\n-->R: local avatar path: ", avatar.path, avatar);
+        if (!avatar) {
             throw new ApiError(400, "Profile pic is not provided !!");
         }
 
         // cloudinary
-        const avatarCloud = uploadToCloudinary(avatarLocalPath);
+        const avatarCloud = uploadToCloudinary(req.file.path);
         // const avatarCloud = uploadToImgKit(avatarLocalPath);
 
         console.log("\n--->R: avatar cloud res: ", avatarCloud.url);
@@ -152,7 +152,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
 const resetPassword = asyncHandler(async (req, res) => {
     try {
         // console.log("reset password: ",req.params, req.body);
-
         const resetPasswordToken = crypto
             .createHash("sha256")
             .update(req.params.token)
@@ -168,7 +167,6 @@ const resetPassword = asyncHandler(async (req, res) => {
                 "Reset Password Token is invalid or Expired !"
             );
         }
-
         const { resetPassword, confirmPassword } = req.body;
         if (resetPassword !== confirmPassword) {
             throw new ApiError(400, "Password mismatched !!");

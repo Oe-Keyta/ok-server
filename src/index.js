@@ -8,7 +8,6 @@ import mongodbApi from "../src/DB/connect.db.js"
 
 // ------------------------------ setting MONGOOSE database and PORT listen ------------------------------
 mongodbApi().then(()=>{
-  console.log("-->R: DB connection calling successfull !! \n ");
   app.listen(process.env.PORT, () => {
     console.log(`-->R: http://localhost:${process.env.PORT}`);
   });

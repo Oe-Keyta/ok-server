@@ -7,7 +7,7 @@ const mongdbApi = async() =>{
        console.log(`-->R: Successfully connected to db !!: at HOST: ${connectionDBResponse.connection.host}`);
 
     } catch (error){
-        console.log("-->E: DBapi connect: ", error, " : connect.js");
+        console.log("-->E: DBapi connect: \n", error);
         process.exit(1);
     }
 };

@@ -4,39 +4,48 @@ import Jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 
 const isAuthenticatedUser = asyncHandler(async (req, res, next) => {
-try{    const { Token } = req.cookies;
+    try {
+        const { Token } = req.cookies;
 
-    if (!Token) {
-        throw new ApiError(401, '--> auth.mdlware.E: Token is null ')
-    }
+        if (!Token) {
+            throw new ApiError(401, "--> auth.mdlware.E: Token is null ");
+        }
 
-    // verify tokenized user
-    const verifyUser = Jwt.verify(Token, process.env.ACCESS_TOKEN_SECRET);
-    req.user = await User.findById(verifyUser._id);
+        // verify tokenized user
+        const verifyUser = Jwt.verify(Token, process.env.ACCESS_TOKEN_SECRET);
+        if(!verifyUser){
+            throw new ApiError(401, "User is not authenticated !!")
+        }
 
-    next();
-    }catch(err){
-         return next({
+        req.user = await User.findById(verifyUser._id);
+
+        next();
+    } catch (err) {
+        next({
             statusCode: err.statusCode,
-            message: err.message
-         } );
+            message: err.message,
+        });
     }
 });
 
-
-
 const authorizeRoles = (...roles) => {
     return (req, res, next) => {
-        if (!roles.includes(req.user.Role)) {
-            return next(
-                new ApiError(
-                    (statusCode = 403),
-                    (message = `${req.user.Role} isn't allowed !`)
-                )
-            );
+        try {
+            if (!roles.includes(req.user.Role)) {
+                throw new ApiError(
+                    403,
+                    `Role of ${String(
+                        req.user.Role
+                    ).toUpperCase()} isn't allowed !`
+                );
+            }
+            next();
+        } catch (err) {
+            next({
+                statusCode: err.statusCode,
+                message: err.message,
+            });
         }
-
-        next();
     };
 };
 export { isAuthenticatedUser, authorizeRoles };
